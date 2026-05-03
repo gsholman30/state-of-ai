@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The State of AI: Garrett Holman</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400&family=Instrument+Sans:wght@300;400;500&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0907;
+  --paper: #f2ede6;
+  --red: #c93515;
+  --blue: #153a8e;
+  --green: #0d4a2a;
+  --gold: #c8993a;
+  --muted: #7a7065;
+  --card: #1a1612;
+  --rule: rgba(255,255,255,0.1);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--paper);
+  font-family: 'Instrument Sans', sans-serif;
+  font-weight: 300;
+  font-size: 18px;
+  line-height: 1.85;
+  overflow-x: hidden;
+}
+
+/* SCROLL REVEAL */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.75s ease, transform 0.75s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ══ HERO ══ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+}
+.hero-img {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://images.unsplash.com/photo-1677756119517-756a188d2d94?w=1600&auto=format&fit=crop&q=80');
+  background-size: cover;
+  background-position: center 30%;
+  filter: brightness(0.35) saturate(0.7);
+}
+.hero-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--bg) 25%, transparent 70%);
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 5rem 7vw 5rem;
+}
+.hero-eyebrow {
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 2rem;
+  display: block;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.3s forwards;
+}
+.hero h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(3rem, 8vw, 7.5rem);
+  font-weight: 900;
+  line-height: 0.95;
+  margin-bottom: 2.5rem;
+  max-width: 900px;
+  opacity: 0;
+  animation: fadeUp 0.9s 0.5s forwards;
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--gold);
+}
+.hero-sub {
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 1.1rem;
+  color: rgba(242,237,230,0.6);
+  max-width: 560px;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeUp 0.9s 0.7s forwards;
+}
+.hero-meta {
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.62rem;
+  color: rgba(242,237,230,0.3);
+  letter-spacing: 0.15em;
+  border-top: 1px solid var(--rule);
+  padding-top: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.9s forwards;
+}
+.scroll-cue {
+  position: absolute;
+  bottom: 2.5rem;
+  right: 5vw;
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: rgba(242,237,230,0.25);
+  writing-mode: vertical-rl;
+  text-transform: uppercase;
+  animation: fadeIn 1.5s 1.2s forwards;
+  opacity: 0;
+}
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: none; }
+  from { opacity: 0; transform: translateY(20px); }
+}
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* ══ NAV BAR ══ */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10,9,7,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 5vw;
+  overflow-x: auto;
+}
+.nav a {
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(242,237,230,0.4);
+  text-decoration: none;
+  padding: 1rem 1.2rem;
+  white-space: nowrap;
+  transition: color 0.2s;
+  border-bottom: 2px solid transparent;
+}
+.nav a:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* ══ LAYOUT ══ */
+.prose {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 5rem 5vw;
+}
+section { position: relative; }
+
+/* ══ LABELS ══ */
+.eyebrow {
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 1.2rem;
+}
+.accent-bar {
+  width: 44px;
+  height: 3px;
+  background: var(--gold);
+  margin-bottom: 2rem;
+}
+
+/* ══ HEADINGS ══ */
+h2 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 1.8rem;
+}
+h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.4rem;
+  font-weight: 400;
+  font-style: italic;
+  margin: 2.5rem 0 1rem;
+  color: var(--gold);
+}
+
+p { margin-bottom: 1.5rem; color: rgba(242,237,230,0.88); }
+
+hr.rule { border: none; border-top: 1px solid var(--rule); }
+
+/* ══ FULL-WIDTH IMAGE BREAKS ══ */
+.img-break {
+  width: 100%;
+  height: 55vh;
+  min-height: 320px;
+  position: relative;
+  overflow: hidden;
+}
+.img-break img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: brightness(0.55) saturate(0.8);
+  transform: scale(1.05);
+  transition: transform 8s ease;
+}
+.img-break:hover img { transform: scale(1.0); }
+.img-break-caption {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 2rem;
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  color: rgba(242,237,230,0.45);
+  text-transform: uppercase;
+}
+
+/* ══ ARGUMENT BANNERS ══ */
+.arg-banner {
+  padding: 5rem 7vw;
+  position: relative;
+  overflow: hidden;
+}
+.arg-banner::before {
+  content: attr(data-num);
+  position: absolute;
+  right: -0.05em;
+  top: -0.15em;
+  font-family: 'Fraunces', serif;
+  font-size: 22vw;
+  font-weight: 900;
+  color: rgba(255,255,255,0.04);
+  line-height: 1;
+  pointer-events: none;
+}
+.arg-banner.red  { background: var(--red); }
+.arg-banner.blue { background: var(--blue); }
+.arg-banner.green{ background: var(--green); }
+.arg-banner h2 {
+  font-size: clamp(2rem, 4.5vw, 3.8rem);
+  max-width: 680px;
+  color: white;
+}
+.arg-banner .arg-label {
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 1.2rem;
+  display: block;
+}
+
+/* ══ PULL QUOTE ══ */
+.pullquote {
+  border-left: 3px solid var(--gold);
+  padding: 1.5rem 2rem;
+  margin: 3rem 0;
+  background: rgba(200,153,58,0.06);
+}
+.pullquote p {
+  font-family: 'Fraunces', serif;
+  font-size: 1.35rem;
+  font-style: italic;
+  color: var(--paper);
+  margin: 0 0 0.8rem;
+  line-height: 1.5;
+}
+.pullquote cite {
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.6rem;
+  color: rgba(242,237,230,0.4);
+  letter-spacing: 0.1em;
+  font-style: normal;
+}
+
+/* ══ SLIDE CARDS ══ */
+.slide-card {
+  background: var(--card);
+  border-top: 2px solid var(--gold);
+  padding: 1.8rem 2rem 1.5rem;
+  margin: 2.5rem 0;
+}
+.slide-card .sc-label {
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.slide-card .sc-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.05rem;
+  color: var(--paper);
+  margin-bottom: 0.6rem;
+}
+.slide-card .sc-body {
+  font-size: 0.9rem;
+  color: rgba(242,237,230,0.6);
+  line-height: 1.7;
+  margin: 0;
+}
+.slide-card .sc-attr {
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.58rem;
+  color: var(--gold);
+  margin-top: 0.8rem;
+  display: block;
+  opacity: 0.8;
+}
+
+/* ══ STAT GRID ══ */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 1px;
+  background: var(--rule);
+  margin: 3rem 0;
+}
+.stat-cell {
+  background: var(--card);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.stat-cell::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transition: transform 0.5s ease;
+}
+.stat-cell:hover::before { transform: scaleX(1); }
+.stat-n {
+  font-family: 'Fraunces', serif;
+  font-size: 3.5rem;
+  color: var(--gold);
+  line-height: 1;
+  display: block;
+  margin-bottom: 0.6rem;
+}
+.stat-d {
+  font-size: 0.8rem;
+  color: rgba(242,237,230,0.5);
+  line-height: 1.5;
+}
+
+/* ══ PERSONAL BLOCK ══ */
+.personal-block {
+  border: 1px solid rgba(200,153,58,0.25);
+  padding: 2.2rem 2.5rem;
+  margin: 2.5rem 0;
+  position: relative;
+}
+.personal-block::before {
+  content: 'Personal Account';
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: var(--gold);
+  color: var(--bg);
+  padding: 0.25rem 0.7rem;
+  position: absolute;
+  top: -0.85rem;
+  left: 1.5rem;
+}
+.personal-block p {
+  font-style: italic;
+  color: rgba(242,237,230,0.65);
+}
+
+/* ══ CITATION LINKS ══ */
+a.cite-link {
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.75rem;
+}
+a.cite-link:hover { opacity: 0.7; }
+
+/* ══ VIDEO SECTION ══ */
+.video-section {
+  background: var(--card);
+  padding: 4rem 7vw;
+}
+.video-section .video-label {
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  display: block;
+}
+.video-section h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.5rem;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--paper);
+  margin: 0 0 0.6rem;
+}
+.video-section p {
+  font-size: 0.92rem;
+  color: rgba(242,237,230,0.55);
+  margin-bottom: 2rem;
+  max-width: 600px;
+}
+.video-wrap {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  max-width: 800px;
+}
+.video-wrap iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+}
+
+/* ══ INTERACTIVE POLL ══ */
+.poll-section {
+  background: linear-gradient(135deg, #0f1a3a 0%, #0a0907 100%);
+  padding: 5rem 7vw;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.poll-section h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.8rem;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--paper);
+  margin-bottom: 0.5rem;
+}
+.poll-section .poll-sub {
+  font-size: 0.9rem;
+  color: rgba(242,237,230,0.5);
+  margin-bottom: 2.5rem;
+}
+.poll-question {
+  font-family: 'Fraunces', serif;
+  font-size: 1.25rem;
+  font-style: italic;
+  color: var(--paper);
+  margin-bottom: 1.5rem;
+  max-width: 620px;
+}
+.poll-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 580px;
+}
+.poll-btn {
+  background: transparent;
+  border: 1px solid rgba(200,153,58,0.3);
+  color: rgba(242,237,230,0.75);
+  padding: 1rem 1.5rem;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.poll-btn:hover {
+  border-color: var(--gold);
+  color: var(--paper);
+  background: rgba(200,153,58,0.08);
+}
+.poll-btn.selected {
+  border-color: var(--gold);
+  background: rgba(200,153,58,0.15);
+  color: var(--paper);
+}
+.poll-bar {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  background: rgba(200,153,58,0.12);
+  transition: width 0.6s ease;
+  z-index: 0;
+}
+.poll-btn-text {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.poll-pct {
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--gold);
+  opacity: 0;
+  transition: opacity 0.3s 0.4s;
+}
+.poll-pct.show { opacity: 1; }
+.poll-result {
+  margin-top: 1.5rem;
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--gold);
+  opacity: 0;
+  transition: opacity 0.4s;
+  min-height: 1.5rem;
+}
+.poll-result.show { opacity: 1; }
+.poll-reset {
+  margin-top: 1rem;
+  background: none;
+  border: none;
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: rgba(242,237,230,0.3);
+  cursor: pointer;
+  text-transform: uppercase;
+  display: none;
+}
+.poll-reset.show { display: block; }
+.poll-reset:hover { color: var(--gold); }
+
+/* ══ WORKS CITED ══ */
+.works-cited {
+  background: #080705;
+  padding: 5rem 7vw;
+  border-top: 1px solid var(--rule);
+}
+.works-cited .inner { max-width: 760px; margin: 0 auto; }
+.cite {
+  font-size: 0.82rem;
+  color: rgba(242,237,230,0.4);
+  padding-left: 2em;
+  text-indent: -2em;
+  margin-bottom: 1rem;
+  line-height: 1.65;
+}
+.cite em { font-style: italic; }
+
+/* ══ FOOTER ══ */
+footer {
+  background: #050403;
+  text-align: center;
+  padding: 2.5rem;
+  font-family: 'Martian Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  color: rgba(242,237,230,0.18);
+  border-top: 1px solid var(--rule);
+}
+
+@media (max-width: 640px) {
+  .stat-grid { grid-template-columns: 1fr; }
+  .arg-banner, .video-section, .poll-section, .works-cited { padding: 3rem 6vw; }
+  .hero-content { padding: 3rem 6vw 4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ HERO ══════════════ -->
+<header class="hero" id="top">
+  <div class="hero-img"></div>
+  <div class="hero-content">
+    <span class="hero-eyebrow">WRT 205 · Opinion Essay · May 2026</span>
+    <h1>The State<br>of <em>AI:</em><br>A Force for<br>Good in the<br>Right Hands</h1>
+    <p class="hero-sub">An opinion essay on artificial intelligence, what it has done for me as a student-athlete, and why I believe it will push education, business, and human capability to places we have never seen before.</p>
+    <div class="hero-meta">GARRETT HOLMAN &nbsp;·&nbsp; WHITMAN SCHOOL OF MANAGEMENT &nbsp;·&nbsp; SYRACUSE UNIVERSITY</div>
+  </div>
+  <span class="scroll-cue">Scroll to Read</span>
+</header>
+
+<!-- ══ NAV ══ -->
+<nav class="nav">
+  <a href="#intro">Intro</a>
+  <a href="#background">Background</a>
+  <a href="#arg1">Education</a>
+  <a href="#arg2">Business</a>
+  <a href="#arg3">Empowerment</a>
+  <a href="#video">Watch</a>
+  <a href="#poll">Your Take</a>
+  <a href="#conclusion">Conclusion</a>
+  <a href="#cited">Works Cited</a>
+</nav>
+
+<!-- ══════════════ INTRODUCTION ══════════════ -->
+<section id="intro">
+<div class="prose">
+  <span class="eyebrow reveal">Introduction</span>
+  <div class="accent-bar reveal reveal-delay-1"></div>
+  <h2 class="reveal reveal-delay-1">The Moment I Stopped Studying Alone</h2>
+
+  <p class="reveal reveal-delay-2">Picture this: it is 10:30 at night. You got back from a three-hour practice two hours ago. Your legs ache, your brain is fogged, and you have an exam in the morning covering three chapters of material you barely had time to read. You open your laptop. You have maybe ninety minutes before you need to sleep if you want to perform tomorrow. What do you do?</p>
+
+  <p class="reveal">That scenario is not hypothetical for me. As a Division I student-athlete and marketing major at Syracuse's Whitman School of Management, it is Tuesday. It is also Thursday. It is most of the week during in-season. The academic demands at Whitman are rigorous, with upper-level courses in strategy, analytics, and finance that require real engagement, and they do not pause for road trips or double sessions. Finding a way to study smart, not just long, stopped being optional and became survival.</p>
+
+  <p class="reveal">That is when I started using ChatGPT, not to cheat, not to replace my thinking, but to work smarter with the time I had. I would upload course material and generate practice questions. I used it to outline what a professor's prompt was actually asking. When I hit a concept I did not understand, I asked it to explain in plain language until it clicked. The result was that I learned more in ninety minutes than I used to in three hours of frustrated re-reading. My grades improved. My stress dropped. And I realized something important: AI is not a shortcut. It is something better than that. It is a multiplier.</p>
+
+  <p class="reveal">That realization shapes everything I believe about where AI is headed. As of April 2026, we are in the middle of one of the most consequential technological transitions in history. AI has moved from research labs into every classroom, every business, and every pocket on earth. The debate around it is loud, fearful, and often poorly informed. My position is clear: AI is a profoundly positive force for education, for business, and for human capability, when used with intention. The concerns about it are real, but they are manageable. They are arguments for using AI better, not for retreating from it. This essay will make that case.</p>
+</div>
+</section>
+
+<!-- ══ IMAGE BREAK 1 ══ -->
+<div class="img-break reveal">
+  <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600&auto=format&fit=crop&q=75" alt="Students studying together with laptops">
+  <span class="img-break-caption">Student life · Syracuse University</span>
+</div>
+
+<!-- ══════════════ BACKGROUND ══════════════ -->
+<section id="background">
+<div class="prose">
+  <span class="eyebrow reveal">Background</span>
+  <div class="accent-bar reveal reveal-delay-1"></div>
+  <h2 class="reveal reveal-delay-1">Understanding What AI Actually Is</h2>
+
+  <p class="reveal reveal-delay-2">Before arguing about AI's impact, it helps to be precise about what it is. The National Education Association defines artificial intelligence as any machine-based system designed around human-defined objectives to perform tasks that would otherwise require human or animal intelligence (<a href="https://www.nea.org/resource-library/artificial-intelligence-education/iii-current-state-artificial-intelligence-education" target="_blank" class="cite-link">NEA</a>). That definition is deliberately broad because AI genuinely is broad. The Alexa on your kitchen counter is reactive AI, meaning it responds to inputs without learning from past experiences. The ChatGPT you use to draft an email is generative AI, producing novel text and ideas by drawing on patterns in vast training data. The Netflix algorithm curating your weekend watch list is predictive AI, analyzing your history to anticipate what you want next.</p>
+
+  <div class="slide-card reveal">
+    <span class="sc-label">From the Presentations</span>
+    <div class="sc-title">Three Types of AI You Already Use</div>
+    <p class="sc-body">Reactive AI tools respond to specific inputs without learning, with examples including Alexa, Siri, and Roomba. Generative AI tools like ChatGPT and Gemini produce novel content based on existing data patterns. Predictive AI tools, like Amazon or Netflix recommendation engines, analyze past behavior to forecast what you will want next.</p>
+    <span class="sc-attr">(Hannah Driscoll-Carignan, "AI and Education," WRT 205 Presentation)</span>
+  </div>
+
+  <p class="reveal">What makes this historical moment different from previous waves of automation is the combination of scale and accessibility. AI is no longer a tool reserved for corporations with massive R&amp;D budgets. According to data presented in class, 72% of businesses have now adopted AI for at least one function (<a href="https://www.ibm.com/think/topics/artificial-intelligence-business" target="_blank" class="cite-link">IBM</a>). Among small businesses specifically, 57% are actively investing in AI, a figure that stood at just 36% three years ago. Chatbots are used by 84% of small-to-medium business employees. Meanwhile, 86% of students used AI during the 2024-2025 school year (<a href="https://www.edweek.org/technology/rising-use-of-ai-in-schools-comes-with-big-downsides-for-students/2025/10" target="_blank" class="cite-link">Vilcarino and Langreo</a>). This technology is everywhere, used by ordinary people for ordinary tasks, and the window for shaping how we use it thoughtfully is right now.</p>
+
+  <div class="stat-grid reveal">
+    <div class="stat-cell">
+      <span class="stat-n">72%</span>
+      <div class="stat-d">of businesses have adopted AI for at least one function</div>
+    </div>
+    <div class="stat-cell">
+      <span class="stat-n">57%</span>
+      <div class="stat-d">of US small businesses investing in AI, up from 36% in 2023</div>
+    </div>
+    <div class="stat-cell">
+      <span class="stat-n">86%</span>
+      <div class="stat-d">of students used AI tools during the 2024-2025 school year</div>
+    </div>
+  </div>
+
+  <p class="reveal">AI has already arrived. The question is not whether it will reshape the world, because it is reshaping it right now. The only real question worth arguing about is whether we are making those changes intentionally, or letting them happen to us.</p>
+</div>
+</section>
+
+<hr class="rule">
+
+<!-- ══════════════ ARGUMENT 1 ══════════════ -->
+<div class="arg-banner red reveal" id="arg1" data-num="01">
+  <span class="arg-label">Argument One</span>
+  <h2>AI Levels the Playing Field in Education</h2>
+</div>
+
+<!-- ══ IMAGE BREAK 2 ══ -->
+<div class="img-break reveal">
+  <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1600&auto=format&fit=crop&q=75" alt="Student working late at night on laptop">
+  <span class="img-break-caption">Late nights, limited time · the student-athlete reality</span>
+</div>
+
+<section id="arg1-body">
+<div class="prose">
+  <p class="reveal">The argument that resonates most personally with me is this: AI has the power to democratize education in ways we have never been able to before. I have lived a version of both sides of this. In high school, when I struggled to organize my writing on a ten-page research paper on 9/11, I had resources many students do not, including a boarding school support system and parents I could FaceTime. But even with those resources, I still got a 77. The feedback was always the same: interesting ideas, poor execution. The gap between what I understood and what I could put on paper was real, and nobody's advice seemed to close it.</p>
+
+  <div class="personal-block reveal">
+    <p>What changed things was AI. Not as a ghostwriter. I never asked it to write for me. But I used it to build an outline, find credible sources, and refine sentences where I knew what I meant but could not express it clearly. AI did not replace my thinking. It helped me organize it. The result was a 90. More importantly, I became a better writer by seeing what organized writing looked like and internalizing it.</p>
+  </div>
+
+  <p class="reveal">That experience scales. Millions of students, including those with IEPs, language barriers, learning differences, or simply less support at home, face some version of that same gap between what they understand and what they can express. AI can meet those students where they are. Adaptive learning platforms adjust to a student's individual pace. AI tutoring systems provide personalized, interactive support at 2 a.m. when no human tutor is available. These are not luxury tools. They are accessibility tools. The Gates Foundation has made this explicit: AI has the potential to expand equitable learning opportunities if it is deployed with attention to evidence, equity, and ethics, designed to benefit all students with fairness and dignity (<a href="https://www.gatesfoundation.org/ideas/articles/ai-tools-education-technology" target="_blank" class="cite-link">Gates Foundation</a>).</p>
+
+  <div class="slide-card reveal">
+    <span class="sc-label">From the Presentations</span>
+    <div class="sc-title">AI as a Tool for Equity in Learning</div>
+    <p class="sc-body">Through tutoring and administrative work, educators have developed time-efficient uses of AI to tackle barriers that were once present in their classrooms, including language barriers and physical or intellectual disabilities. Adaptive learning platforms tailor to individual student needs. AI tutors can offer personalized and interactive support. Educators need to focus on integrating AI in ways that enrich learning, preserving academic integrity, human connection, and equitable outcomes.</p>
+    <span class="sc-attr">(Britney C.M. and Emily S., "AI &amp; Education," WRT 205 Presentation)</span>
+  </div>
+
+  <p class="reveal">The concern raised most often about AI in education is the risk of cognitive offloading, which is the idea that when AI does the thinking, the brain stops developing the capacity to think. Rebecca Winthrop of Brookings argued in a widely cited piece that when students use generative AI to produce answers, they are not learning to parse truth from fiction or to build strong arguments. That concern is legitimate. A June 2025 study from MIT's Media Lab, titled "Your Brain on ChatGPT," tracked student brain activity using EEG technology across four writing sessions and found that students who used ChatGPT showed up to 55% reduced brain connectivity compared to those who wrote without any tools. Even more striking, 83% of the ChatGPT users could not accurately quote from essays they had written just minutes before (<a href="https://www.media.mit.edu/publications/your-brain-on-chatgpt/" target="_blank" class="cite-link">Kosmyna et al.</a>).</p>
+
+  <p class="reveal">But this concern does not indict AI. It indicts <em>passive</em> use of AI. The students in that MIT study were using AI as a replacement for thought. The way I use it, and the way my classmate Kyle uses it, is fundamentally different. Kyle, a fellow student-athlete I interviewed for my community report, uploads assignment prompts into ChatGPT to clarify what the professor is actually asking before he starts working. He never asks AI to complete assignments for him. He works <em>with</em> it. That kind of collaboration, where AI reduces the friction around learning without removing the learning itself, is exactly what educators should be designing for.</p>
+
+  <div class="pullquote reveal">
+    <p>AI in education is about leveraging technology to facilitate and enhance learning experiences, not replace them.</p>
+    <cite>Southern Methodist University, cited in Hannah Driscoll-Carignan, "AI and Education," WRT 205 Presentation</cite>
+  </div>
+
+  <p class="reveal">Professor Avrenli, my Business Analytics professor at Syracuse, has already built this philosophy into his course design. He permits AI on exams because he believes students need to learn how to use it ethically and effectively, the same way they will be expected to in their careers. But he teaches core concepts directly first, so that the foundation exists before AI amplifies it. His approach points toward what good AI integration in education looks like: not replacement, but scaffolding. Not a crutch, but a catalyst.</p>
+
+  <div class="slide-card reveal">
+    <span class="sc-label">From the Presentations</span>
+    <div class="sc-title">Risks Are Real, But So Are the Benefits</div>
+    <p class="sc-body">AI in education carries genuine risks: cognitive development concerns, academic integrity challenges, and reduced human interaction. But it also offers real benefits, including personalization, efficiency, and accessibility. The challenge is managing the downsides while preserving the upside. 71% of K-12 teachers have received no professional learning about using AI in the classroom, which means the policy environment is lagging far behind the reality.</p>
+    <span class="sc-attr">(Janice and Katelyn, "Artificial Intelligence in Education," WRT 205 Presentation)</span>
+  </div>
+</div>
+</section>
+
+<hr class="rule">
+
+<!-- ══ IMAGE BREAK 3 ══ -->
+<div class="img-break reveal">
+  <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1600&auto=format&fit=crop&q=75" alt="Modern office with people working on computers with AI">
+  <span class="img-break-caption">AI in the workplace · business transformation</span>
+</div>
+
+<!-- ══════════════ ARGUMENT 2 ══════════════ -->
+<div class="arg-banner blue reveal" id="arg2" data-num="02">
+  <span class="arg-label">Argument Two</span>
+  <h2>AI Makes Businesses and Workers More Capable</h2>
+</div>
+
+<section id="arg2-body">
+<div class="prose">
+  <p class="reveal">The fear most commonly attached to AI in the workplace is job displacement. The narrative is simple and scary: machines are coming for your job. And if your entire understanding of AI's economic impact comes from headlines, that fear seems reasonable. But headlines are not research. The data tells a different story.</p>
+
+  <div class="slide-card reveal">
+    <span class="sc-label">From the Presentations</span>
+    <div class="sc-title">Job Loss Fear vs. Job Loss Reality</div>
+    <p class="sc-body">Despite widespread anxiety about job displacement, only 12% of small businesses are expected to reduce staff in the next year. A significant portion of current headcount reductions are happening before businesses have seen direct AI benefits, meaning the fear of AI is driving more cuts than AI itself. Jobs involving repetitive tasks remain the most vulnerable, but broader displacement has not materialized at the scale many predicted.</p>
+    <span class="sc-attr">(Jordan Farias and Jacob Hagan, "Artificial Intelligence in Business," WRT 205 Presentation)</span>
+  </div>
+
+  <p class="reveal">The picture that emerges from actual research is far more nuanced than the doomsday framing. AI is saving the average small business employee 5.6 hours per week, climbing to 7.2 hours for managers. That is not time stolen from workers. That is time returned to them. Time for higher-level thinking, creative problem solving, and the kinds of human judgment that AI genuinely cannot replicate. AI automates the repetitive and amplifies the meaningful.</p>
+
+  <p class="reveal">Michal Gradus, a Whitman graduate and former Division I soccer player I spoke with for my community report, described exactly this dynamic. Working in his family's business in Poland, he uses AI for scheduling, data organization, and drafting materials. But he was unequivocal that leadership, including motivating people, building trust, and reading the room, cannot be automated. Emotional intelligence belongs to humans. AI handles the administrative load so that humans can focus on the relational work that actually matters.</p>
+
+  <div class="slide-card reveal">
+    <span class="sc-label">From the Presentations</span>
+    <div class="sc-title">What AI Actually Does for Business</div>
+    <p class="sc-body">AI drives automation and efficiency, data-driven decision-making, improved customer experience through chatbots and personalization, product and service innovation, and competitive advantage. Organizations that adopt AI effectively can move faster, innovate more, and outpace competitors. Cost reduction comes through optimized supply chains and lower operational overhead. The future belongs to organizations that use AI to amplify human judgment, not replace it.</p>
+    <span class="sc-attr">(Andrew Mautner and Luke Tota, "The Business of Artificial Intelligence," WRT 205 Presentation)</span>
+  </div>
+
+  <p class="reveal">The equity angle matters here too. Erin and Tess highlighted in their presentation how AI has shifted from a specialized corporate tool to something any individual can deploy. A small business owner who cannot afford a full marketing team can now build a LinkedIn outreach assistant, an email writer, a customer service chatbot. A solo entrepreneur competing against a Fortune 500 company now has access to tools that used to cost millions. That democratization is not nothing. It is a fundamental reshaping of who gets to compete.</p>
+
+  <p class="reveal">The broader economic numbers are compelling. AI-automated cybersecurity has saved companies an average of $1.9 million per security breach. In healthcare, AI is accelerating drug discovery and vaccine development. In logistics, it is reducing inventory shortages and lowering operational costs. McKinsey's research on generative AI estimated its economic potential at trillions of dollars in value added annually (<a href="https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/the-economic-potential-of-generative-ai" target="_blank" class="cite-link">McKinsey Global Institute</a>). These are not abstract projections. They represent real efficiency gains in real industries that flow back to consumers and workers alike. When a supply chain runs more smoothly, goods cost less. When a hospital diagnoses faster, lives are saved.</p>
+
+  <p class="reveal">Concerns about bias in AI algorithms are real and deserve serious attention, particularly in areas like hiring, where algorithmic bias could systematically disadvantage already-marginalized groups. Concerns about data privacy, especially regarding what personal information AI systems collect without explicit consent, are worth addressing through regulation. But these are arguments for better governance of AI, not for abandoning it. The answer to a biased algorithm is a better algorithm, better oversight, and better policy. Going back to purely human decision-making is not the answer, because that carries its own well-documented biases.</p>
+</div>
+</section>
+
+<!-- ══ VIDEO SECTION ══ -->
+<div class="video-section reveal" id="video">
+  <span class="video-label">Watch · Related Content</span>
+  <h3>AI Study Tools in Action</h3>
+  <p>See exactly how students are using AI to study smarter, save time, and perform better academically. This is the real-world version of the argument I am making.</p>
+  <div class="video-wrap">
+    <iframe src="https://www.youtube.com/embed/cRTe_JKEv3s" title="Best AI Study Tools 2025" allowfullscreen loading="lazy"></iframe>
+  </div>
+</div>
+
+<hr class="rule">
+
+<!-- ══════════════ ARGUMENT 3 ══════════════ -->
+<div class="arg-banner green reveal" id="arg3" data-num="03">
+  <span class="arg-label">Argument Three</span>
+  <h2>AI Empowers the People Who Learn to Use It Well</h2>
+</div>
+
+<!-- ══ IMAGE BREAK 4 ══ -->
+<div class="img-break reveal">
+  <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1600&auto=format&fit=crop&q=75" alt="Robot and human collaboration technology future">
+  <span class="img-break-caption">Human and machine · working together</span>
+</div>
+
+<section id="arg3-body">
+<div class="prose">
+  <p class="reveal">The most important thing I have learned about AI this semester is not a statistic. It is a principle: AI is an amplifier. Whatever you bring to it, it makes more of. If you bring laziness, you get laziness at scale, polished-sounding output with no real thinking behind it. If you bring genuine effort and genuine questions, you get something rare: a tool that helps you think further, faster, and more clearly than you could alone.</p>
+
+  <p class="reveal">I came into this semester with a relatively simple view of AI. It felt like a novelty, useful for studying, maybe a little risky. Over the course of the semester, working through research on AI and the brain, AI in education, AI in business, and AI in global politics, my view has sharpened considerably. AI is not just automating tasks. It is automating parts of reasoning, which fundamentally changes what human beings are responsible for. The highest-value human skills are no longer information recall or routine execution. They are judgment, creativity, leadership, and the ability to ask the right questions. AI handles everything else.</p>
+
+  <div class="slide-card reveal">
+    <span class="sc-label">From the Presentations</span>
+    <div class="sc-title">From Tool to Agent: AI in Everyday Hands</div>
+    <p class="sc-body">AI has shifted from a specialized corporate resource to something ordinary people can build for themselves: homework assistance, LinkedIn outreach agents, email writers, scheduling tools. These uses expand human speeds and capabilities. The focus must be on workflow integration and on training AI agents properly in order to sustain productivity and genuine skill, rather than undermine them.</p>
+    <span class="sc-attr">(Erin and Tess, "AI in Business," WRT 205 Presentation)</span>
+  </div>
+
+  <p class="reveal">As a student-athlete, the way I use AI is a direct reflection of this principle. I do not use it to avoid the hard parts of learning. I use it to make the hard parts possible given real constraints. When I have ninety minutes after an evening practice and a chapter of business analytics to absorb, I cannot afford to spend forty-five minutes re-reading a paragraph that isn't clicking. I ask ChatGPT to explain it differently. When I need to write a response paper the next morning, I do not ask it to write the paper. I use it to stress-test my argument before I sit down to write, to find the holes in my logic before my professor does. That is not offloading cognition. That is using a tool to think more rigorously.</p>
+
+  <div class="pullquote reveal">
+    <p>How do we use AI responsibly without harming learning, thinking, or human connection?</p>
+    <cite>Janice and Katelyn, "Artificial Intelligence in Education," WRT 205 Presentation</cite>
+  </div>
+
+  <p class="reveal">A 2025 study from Microsoft Research and Carnegie Mellon University backs this up directly. Researchers surveyed 319 knowledge workers and found that the more confident someone was in AI's ability to handle a task, the less critical thinking they actually did. The study called this a "perceived enaction of critical thinking," meaning people felt like they were thinking carefully while actually disengaging. That pattern was strongest on routine, lower-stakes tasks, which is exactly the kind of work most people use AI for daily (<a href="https://www.microsoft.com/en-us/research/publication/the-impact-of-generative-ai-on-critical-thinking-self-reported-reductions-in-cognitive-effort-and-confidence-effects-from-a-survey-of-knowledge-workers/" target="_blank" class="cite-link">Tankelevitch et al.</a>). That distinction matters. When we trust AI too completely, we stop engaging. Over time, the habits of rigorous thought weaken. But the solution is not to abandon the tool. It is to use it with enough intentionality that you remain the one doing the thinking, with AI as the collaborator rather than the replacement.</p>
+
+  <p class="reveal">At the largest scale, this principle holds across nations. The Atlantic Council published a piece in January 2026 outlining eight ways AI will shape geopolitics in the year ahead. The central argument is that the competition between the US and China over AI dominance is intensifying, with both nations racing to control chips, computing power, and data infrastructure. The piece notes that by end of 2026, global AI governance is likely to be "global in form but geopolitical in substance," meaning the rules will exist on paper while the real power remains with whoever controls the technology. The concept of Sovereign AI frames a nation's ability to build AI using its own infrastructure as a direct measure of independence and power. Nations and individuals who treat AI as something to master rather than something to fear will be the ones positioned to shape what comes next (<a href="https://www.atlanticcouncil.org/dispatches/eight-ways-ai-will-shape-geopolitics-in-2026/" target="_blank" class="cite-link">Atlantic Council Technology Programs</a>).</p>
+
+  <p class="reveal">The students who graduate from college in 2026 knowing how to use AI thoughtfully, who can direct it, evaluate its outputs critically, and integrate it into complex workflows, will not be replaced by AI. They will be the ones deciding what AI does. That is a profoundly valuable place to be. Getting there requires doing exactly what too many people are afraid to do: engaging seriously with the technology, learning its limits, and developing the judgment to know when to trust it and when to push past it.</p>
+</div>
+</section>
+
+<!-- ══════════════ INTERACTIVE POLL ══════════════ -->
+<div class="poll-section reveal" id="poll">
+  <h3>What's Your Take?</h3>
+  <p class="poll-sub">This essay argues AI is a positive force when used with intention. Where do you stand?</p>
+  <p class="poll-question">When you think about AI in your own life right now, which statement fits best?</p>
+  <div class="poll-options" id="pollOptions">
+    <button class="poll-btn" onclick="vote(0)">
+      <div class="poll-bar" id="bar0"></div>
+      <div class="poll-btn-text">
+        <span>AI has genuinely helped me learn or work better</span>
+        <span class="poll-pct" id="pct0"></span>
+      </div>
+    </button>
+    <button class="poll-btn" onclick="vote(1)">
+      <div class="poll-bar" id="bar1"></div>
+      <div class="poll-btn-text">
+        <span>I use AI but I'm not sure if it's actually helping</span>
+        <span class="poll-pct" id="pct1"></span>
+      </div>
+    </button>
+    <button class="poll-btn" onclick="vote(2)">
+      <div class="poll-bar" id="bar2"></div>
+      <div class="poll-btn-text">
+        <span>I worry AI is making me lazier or less focused</span>
+        <span class="poll-pct" id="pct2"></span>
+      </div>
+    </button>
+    <button class="poll-btn" onclick="vote(3)">
+      <div class="poll-bar" id="bar3"></div>
+      <div class="poll-btn-text">
+        <span>I avoid AI and think we should be more cautious</span>
+        <span class="poll-pct" id="pct3"></span>
+      </div>
+    </button>
+  </div>
+  <div class="poll-result" id="pollResult"></div>
+  <button class="poll-reset" id="pollReset" onclick="resetPoll()">Reset / Vote Again</button>
+</div>
+
+<!-- ══════════════ CONCLUSION ══════════════ -->
+<section id="conclusion">
+<div class="prose">
+  <span class="eyebrow reveal">Conclusion</span>
+  <div class="accent-bar reveal reveal-delay-1"></div>
+  <h2 class="reveal reveal-delay-1">The Tool Is in Our Hands</h2>
+
+  <p class="reveal reveal-delay-2">I want to return to where I started: 10:30 at night, a student-athlete with ninety minutes, a chapter to master, and a practice session's worth of exhaustion in my legs. That is not a glamorous picture. But it is a true one. And it is the picture that convinced me, more than any research paper or data point, that AI matters. Used well, it has the power to make people more capable than the circumstances they are handed.</p>
+
+  <p class="reveal">This essay has made three interconnected arguments. AI levels the playing field in education, making quality learning support available to students who never had access to it before. AI makes workers and businesses more capable by handling what is routine so that humans can focus on what is genuinely human. And AI empowers the individuals who take the time to learn how to use it with intention and rigor. All three arguments are grounded in my own experience, in the research my class explored this semester, and in real data about how AI is actually being used across industries and institutions right now.</p>
+
+  <p class="reveal">The concerns about AI are real and worth taking seriously. Cognitive dependency, algorithmic bias, data privacy risks, the pace of job transformation: none of these are invented fears. But each of them points toward the same conclusion: we need to use AI better, not less. The answer to a flawed tool is a sharper user, better design, and stronger governance. It is not retreat.</p>
+
+  <p class="reveal">As Andrew Mautner and Luke Tota concluded in their business presentation, the future belongs to organizations and people who use AI to amplify human judgment. I believe that completely. AI is not going to think for us. It is going to give us more time, more clarity, and more capacity to think for ourselves. What we do with that is up to us.</p>
+
+  <p class="reveal" style="font-family:'Fraunces',serif; font-size:1.3rem; font-style:italic; color:var(--gold);">The tool is in our hands. The question is whether we are willing to use it well.</p>
+</div>
+</section>
+
+<!-- ══ FINAL IMAGE ══ -->
+<div class="img-break reveal">
+  <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1600&auto=format&fit=crop&q=75" alt="AI neural network visualization technology">
+  <span class="img-break-caption">The future · ours to shape</span>
+</div>
+
+<!-- ══════════════ WORKS CITED ══════════════ -->
+<div class="works-cited" id="cited">
+  <div class="inner">
+    <span class="eyebrow reveal">MLA Format</span>
+    <div class="accent-bar reveal reveal-delay-1"></div>
+    <h2 class="reveal reveal-delay-1">Works Cited</h2>
+
+    <p class="cite reveal">Atlantic Council Technology Programs. "Eight Ways AI Will Shape Geopolitics in 2026." <em>Atlantic Council</em>, 15 Jan. 2026, www.atlanticcouncil.org/dispatches/eight-ways-ai-will-shape-geopolitics-in-2026/.</p>
+    <p class="cite reveal">Avrenli, Kivanc. "BUA 345 Business Analytics Syllabus." Whitman School of Management, Syracuse University, Spring 2026.</p>
+    <p class="cite reveal">Britney C.M. and Emily S. "AI &amp; Education." WRT 205 Presentation, 27 Jan. 2026.</p>
+    <p class="cite reveal">Driscoll-Carignan, Hannah. "AI and Education." WRT 205 Presentation.</p>
+    <p class="cite reveal">Erin and Tess. "AI in Business." WRT 205 Presentation.</p>
+    <p class="cite reveal">Farias, Jordan, and Jacob Hagan. "Artificial Intelligence in Business." WRT 205 Presentation, 24 Feb. 2026.</p>
+    <p class="cite reveal">Gates Foundation. "Can AI Transform Education?" <em>Gates Foundation</em>, 11 Sept. 2024, www.gatesfoundation.org/ideas/articles/ai-tools-education-technology.</p>
+    <p class="cite reveal">Holman, Garrett. "AI Memoir: Finding My Words." WRT 205, 1 Feb. 2026.</p>
+    <p class="cite reveal">Holman, Garrett. "A Live Podcast Talking Points Document." WRT 205, 23 Feb. 2026.</p>
+    <p class="cite reveal">Holman, Garrett. "Community Report: AI at the Whitman School." WRT 205, 23 Feb. 2026.</p>
+    <p class="cite reveal">IBM. "What Is Artificial Intelligence in Business?" <em>IBM Think</em>, 2024, www.ibm.com/think/topics/artificial-intelligence-business.</p>
+    <p class="cite reveal">Janice and Katelyn. "Artificial Intelligence in Education." WRT 205 Presentation.</p>
+    <p class="cite reveal">Kosmyna, Nataliya, et al. "Your Brain on ChatGPT: Accumulation of Cognitive Debt when Using an AI Assistant for Essay Writing Task." <em>MIT Media Lab</em>, June 2025, www.media.mit.edu/publications/your-brain-on-chatgpt/.</p>
+    <p class="cite reveal">Tankelevitch, Lev, et al. "The Impact of Generative AI on Critical Thinking: Self-Reported Reductions in Cognitive Effort and Confidence Effects from a Survey of Knowledge Workers." <em>Microsoft Research</em>, Jan. 2025, www.microsoft.com/en-us/research/publication/the-impact-of-generative-ai-on-critical-thinking-self-reported-reductions-in-cognitive-effort-and-confidence-effects-from-a-survey-of-knowledge-workers/.</p>
+    <p class="cite reveal">Mautner, Andrew, and Luke Tota. "The Business of Artificial Intelligence." WRT 205 Presentation.</p>
+    <p class="cite reveal">McKinsey Global Institute. <em>The Economic Potential of Generative AI: The Next Productivity Frontier</em>. McKinsey &amp; Company, Jan. 2024, www.mckinsey.com/capabilities/mckinsey-digital/our-insights/the-economic-potential-of-generative-ai.</p>
+    <p class="cite reveal">National Education Association. "The Current State of Artificial Intelligence in Education." <em>NEA</em>, www.nea.org/resource-library/artificial-intelligence-education/iii-current-state-artificial-intelligence-education. Accessed 26 Jan. 2026.</p>
+    <p class="cite reveal">Turner, Cory. "The Risks of AI in Schools Outweigh the Benefits, Report Says." <em>NPR</em>, 14 Jan. 2026, www.npr.org/2026/01/14/nx-s1-5674741/ai-schools-education.</p>
+    <p class="cite reveal">Vilcarino, Jennifer, and Lauraine Langreo. "Rising Use of AI in Schools Comes with Big Downsides for Students." <em>Education Week</em>, 4 Nov. 2025, www.edweek.org/technology/rising-use-of-ai-in-schools-comes-with-big-downsides-for-students/2025/10.</p>
+    <p class="cite reveal">Winthrop, Rebecca. Quoted in Britney C.M. and Emily S., "AI &amp; Education." WRT 205 Presentation, citing <em>Education Week</em>, 2025.</p>
+    <p class="cite reveal">Wroten, Bryan. "AI Is a Tool, Yes, But Not the Tool for Every Job." <em>CoStar News</em>, 13 Feb. 2026, www.costar.com/article/608328803/ai-is-a-tool-yes-but-not-the-tool-for-every-job.</p>
+  </div>
+</div>
+
+<footer>
+  Garrett Holman &nbsp;·&nbsp; WRT 205 &nbsp;·&nbsp; Whitman School of Management &nbsp;·&nbsp; Syracuse University &nbsp;·&nbsp; May 2026
+</footer>
+
+<script>
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── POLL LOGIC ──
+const responses = [
+  "That's the whole point of this essay. AI used with intention makes you more capable, not less.",
+  "Fair. The key is being intentional. Use it to push your thinking, not bypass it.",
+  "That concern is real and backed by research. The MIT study found exactly this. The answer is using it more deliberately.",
+  "Completely valid. The risks are real. But the argument here is for better use, not abandonment."
+];
+
+// Simulated starting vote counts for realism
+let votes = [42, 28, 18, 12];
+let userVoted = false;
+let userChoice = -1;
+
+function vote(idx) {
+  if (userVoted) return;
+  userVoted = true;
+  userChoice = idx;
+  votes[idx]++;
+
+  const total = votes.reduce((a,b) => a+b, 0);
+
+  document.querySelectorAll('.poll-btn').forEach((btn, i) => {
+    const pct = Math.round((votes[i]/total)*100);
+    const bar = document.getElementById('bar' + i);
+    const pctEl = document.getElementById('pct' + i);
+    bar.style.width = pct + '%';
+    pctEl.textContent = pct + '%';
+    pctEl.classList.add('show');
+    if (i === idx) btn.classList.add('selected');
+    btn.disabled = true;
+    btn.style.cursor = 'default';
+  });
+
+  const result = document.getElementById('pollResult');
+  result.textContent = responses[idx];
+  result.classList.add('show');
+
+  document.getElementById('pollReset').classList.add('show');
+}
+
+function resetPoll() {
+  userVoted = false;
+  userChoice = -1;
+  document.querySelectorAll('.poll-btn').forEach((btn, i) => {
+    btn.disabled = false;
+    btn.style.cursor = 'pointer';
+    btn.classList.remove('selected');
+    document.getElementById('bar' + i).style.width = '0';
+    document.getElementById('pct' + i).classList.remove('show');
+  });
+  document.getElementById('pollResult').classList.remove('show');
+  document.getElementById('pollReset').classList.remove('show');
+}
+</script>
+
+</body>
+</html>
